@@ -5,6 +5,7 @@ namespace PhilKra\ElasticApmLaravel\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Log;
 use PhilKra\Agent;
+use PhilKra\Events\Span;
 use PhilKra\Helper\Timer;
 
 class RecordTransaction
@@ -64,7 +65,11 @@ class RecordTransaction
             'type' => 'HTTP'
         ]);
 
-        $transaction->setSpans(app('query-log')->toArray());
+        /** @var Span $query */
+        foreach (app('query-log') as $query) {
+            $query->setParent($transaction);
+            $this->agent->putEvent($query);
+        }
 
         if (config('elastic-apm.transactions.use_route_uri')) {
             $transaction->setTransactionName($this->getRouteUriTransactionName($request));
