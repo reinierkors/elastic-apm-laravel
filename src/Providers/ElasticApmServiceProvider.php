@@ -201,7 +201,7 @@ class ElasticApmServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $this->app->make('query-log')->push($query);
+            $this->app->make('query-log')->push($span);
         });
     }
 }
