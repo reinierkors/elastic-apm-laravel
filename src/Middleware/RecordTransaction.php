@@ -23,10 +23,9 @@ class RecordTransaction
      * RecordTransaction constructor.
      * @param Agent $agent
      */
-    public function __construct(Agent $agent, Timer $timer)
+    public function __construct(Agent $agent)
     {
         $this->agent = $agent;
-        $this->timer = $timer;
     }
 
     /**
@@ -53,9 +52,9 @@ class RecordTransaction
 
         $user = $request->user();
         $transaction->setUserContext([
-            'id' => optional($user)->id,
-            'email' => optional($user)->email,
-            'username' => optional($user)->user_name,
+            'id' => $user->id ?? null,
+            'email' => $user->email ?? null,
+            'username' => $user->user_name ?? null,
             'ip' => $request->ip(),
             'user-agent' => $request->userAgent(),
         ]);
@@ -75,7 +74,7 @@ class RecordTransaction
             $transaction->setTransactionName($this->getRouteUriTransactionName($request));
         }
 
-        $transaction->stop($this->timer->getElapsedInMilliseconds());
+        $transaction->stop();
 
         return $response;
     }
